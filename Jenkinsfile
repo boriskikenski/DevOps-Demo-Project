@@ -5,7 +5,8 @@ pipeline {
       agent any
       steps {
         sh 'mvn clean package -DskipTests'
-        sh '''/usr/local/bin/docker compose up
+        sh '''
+docker compose up
 '''
       }
     }

@@ -6,6 +6,7 @@ pipeline {
       steps {
         sh 'mvn clean package -DskipTests'
         sh 'docker compose build'
+        sh 'docker compose up --wait'
       }
     }
 

@@ -5,6 +5,7 @@ pipeline {
       agent any
       steps {
         sh 'mvn clean package -DskipTests'
+        sh 'docker compose build'
       }
     }
 

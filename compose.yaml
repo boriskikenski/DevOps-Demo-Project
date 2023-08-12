@@ -1,9 +1,32 @@
+version: "2"
+
 services:
-  postgres:
-    image: 'postgres:latest'
+  psql-db:
+    image: postgres
+    container_name: psql-db
+    restart: always
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      - POSTGRES_USER=bkikenski
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=devops
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     ports:
-      - '5432'
+      - '5432:5432'
+
+  devops:
+    container_name: devops-demo-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://psql-db:5432/devops
+      - SPRING_DATASOURCE_USERNAME=bkikenski
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - psql-db
+volumes:
+  pgdata:

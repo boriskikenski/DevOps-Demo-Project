@@ -25,6 +25,7 @@ pipeline {
 
     stage('Deploy to Nexus ') {
       steps {
+        sh 'mvn clean package'
         sh '''pom = readMavenPom file: "pom.xml";
                     
 

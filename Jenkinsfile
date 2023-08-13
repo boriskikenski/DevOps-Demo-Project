@@ -5,7 +5,7 @@ pipeline {
       agent any
       steps {
         sh 'docker system prune -a --volumes -f'
-        sh 'mvn clean package -DskipTests'
+        sh 'mvn clean package '
         sh 'docker compose build'
         sh 'docker compose up --wait'
       }
@@ -13,8 +13,7 @@ pipeline {
 
     stage('Start container') {
       steps {
-        sh 'docker compose up --wait'
-        sh 'docker compose ps'
+        sh 'mvn test'
       }
     }
 

@@ -6,21 +6,25 @@ pipeline {
       steps {
         sh 'docker system prune -a --volumes -f'
         sh 'mvn clean package '
+      }
+    }
+
+    stage('Start') {
+      steps {
         sh 'docker compose build'
         sh 'docker compose up --wait'
       }
     }
 
-    stage('Start container') {
+    stage('Test') {
       steps {
         sh 'mvn test'
       }
     }
 
-    stage('Stop container') {
+    stage('Stop app') {
       steps {
         sh 'docker compose down --remove-orphans -v'
-        sh 'docker compose ps'
       }
     }
 

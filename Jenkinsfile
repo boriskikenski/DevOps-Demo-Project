@@ -1,27 +1,61 @@
 pipeline {
   agent any
   stages {
-    stage('Build') {
+    stage('Build and start application') {
       agent any
       steps {
         sh 'docker system prune -a --volumes -f'
-        sh 'mvn clean package -DskipTests'
+        sh 'mvn clean package '
         sh 'docker compose build'
         sh 'docker compose up --wait'
       }
     }
 
-    stage('Start container') {
+    stage('Stop application') {
       steps {
-        sh 'docker compose up --wait'
-        sh 'docker compose ps'
+        sh 'docker compose down --remove-orphans -v'
       }
     }
 
-    stage('Stop container') {
+    stage('Test') {
       steps {
-        sh 'docker compose down --remove-orphans -v'
-        sh 'docker compose ps'
+        sh 'mvn test'
+      }
+    }
+
+    stage('Deploy to Nexus ') {
+      steps {
+        sh '''pom = readMavenPom file: "pom.xml";
+                    
+
+filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
+                    echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length} ${filesByGlob[0].lastModified}"
+                    artifactPath = filesByGlob[0].path;
+                    artifactExists = fileExists artifactPath;
+                    if(artifactExists) {
+                        echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
+                        nexusArtifactUploader(
+                            nexusVersion: "nexus3",
+                            protocol: "http",
+                            nexusUrl: "localhost:8081",
+                            groupId: pom.groupId,
+                            version: pom.version,
+                            repository: "DevOps-Demo-Repo",
+                            credentialsId: "bkikenski",
+                            artifacts: [
+                                [artifactId: pom.artifactId,
+                                classifier: \'\',
+                                file: artifactPath,
+                                type: pom.packaging],
+                                [artifactId: pom.artifactId,
+                                classifier: \'\',
+                                file: "pom.xml",
+                                type: "pom"]
+                            ]
+                        );
+                    } else {
+                        error "*** File: ${artifactPath}, could not be found";
+                    }'''
       }
     }
 

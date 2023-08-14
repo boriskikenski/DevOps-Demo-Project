@@ -41,7 +41,7 @@ filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
                             groupId: pom.groupId,
                             version: pom.version,
                             repository: "DevOps-Demo-Repo",
-                            credentialsId: "bkikenski",
+                            credentialsId: "nexus-user-credentials",
                             artifacts: [
                                 [artifactId: pom.artifactId,
                                 classifier: \'\',

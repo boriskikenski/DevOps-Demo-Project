@@ -61,6 +61,15 @@ pipeline {
       }
     }
 
+    stage('Deploy to Kubernetes') {
+      steps {
+        script {
+          kubectl apply -f postgres-config.yaml
+        }
+
+      }
+    }
+
   }
   tools {
     maven 'Maven'

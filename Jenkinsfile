@@ -64,11 +64,8 @@ pipeline {
     stage('Deploy to Kubernetes') {
       steps {
         script {
-          withKubeConfig([credentialsId: 'bkikenski']) {
-            sh 'kubectl apply -f postgres-config.yaml'
-          }
+          kubernetesDeploy(configs: "postgres-confing.yaml", "postgres-secret.yaml", "postgrest.yaml", "devops-demo-project.yaml")
         }
-
       }
     }
 

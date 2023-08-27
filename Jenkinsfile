@@ -61,6 +61,9 @@ pipeline {
         script {
           withKubeConfig([credentialsId: 'minikube-config']) {
             sh 'kubectl apply -f postgres-config.yaml'
+            sh 'kubectl apply -f postgres-secret.yaml'
+            sh 'kubectl apply -f postgres.yaml'
+            sh 'kubectl apply -f devops-demo-project.yaml'
           }
         }
       }

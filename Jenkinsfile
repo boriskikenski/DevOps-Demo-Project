@@ -10,16 +10,19 @@ pipeline {
         sh 'docker compose up --wait'
       }
     }
+
     stage('Stop application') {
       steps {
         sh 'docker compose down --remove-orphans -v'
       }
     }
+
     stage('Test') {
       steps {
         sh 'mvn test'
       }
     }
+
     stage('Deploy to Nexus ') {
       steps {
         sh 'mvn clean package'
@@ -54,10 +57,14 @@ pipeline {
             error "*** File: ${artifactPath}, could not be found";
           }
         }
+
       }
     }
+
     stage('Deploy to Kubernetes') {
       steps {
+        sh 'mvn clean package'
+        sh 'docker build devops-demo .'
         script {
           withKubeConfig([credentialsId: 'minikube-config']) {
             sh 'kubectl create namespace devops-demo'
@@ -68,8 +75,10 @@ pipeline {
             sh 'kubectl apply -f devops-demo-project.yaml'
           }
         }
+
       }
     }
+
   }
   tools {
     maven 'Maven'

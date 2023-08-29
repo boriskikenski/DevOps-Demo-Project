@@ -64,7 +64,7 @@ pipeline {
     stage('Deploy to Kubernetes') {
       steps {
         sh 'mvn clean package'
-        sh 'docker build devops-demo .'
+        sh 'docker build -t devops-demo .'
         script {
           withKubeConfig([credentialsId: 'minikube-config']) {
             sh 'kubectl create namespace devops-demo'

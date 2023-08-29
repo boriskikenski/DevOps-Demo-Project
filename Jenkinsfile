@@ -60,9 +60,11 @@ pipeline {
       steps {
         script {
           withKubeConfig([credentialsId: 'minikube-config']) {
-            sh 'kubectl apply -f postgres-config.yaml'
+            sh 'kubectl create namespace devops-demo'
             sh 'kubectl apply -f postgres-secret.yaml'
+            sh 'kubectl apply -f postgres-storage.yaml'
             sh 'kubectl apply -f postgres.yaml'
+            sh 'kubectl apply -f postgres-service.yaml'
             sh 'kubectl apply -f devops-demo-project.yaml'
           }
         }

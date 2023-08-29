@@ -10,16 +10,19 @@ pipeline {
         sh 'docker compose up --wait'
       }
     }
+
     stage('Stop application') {
       steps {
         sh 'docker compose down --remove-orphans -v'
       }
     }
+
     stage('Test') {
       steps {
         sh 'mvn test'
       }
     }
+
     stage('Deploy to Nexus ') {
       steps {
         sh 'mvn clean package'
@@ -54,12 +57,17 @@ pipeline {
             error "*** File: ${artifactPath}, could not be found";
           }
         }
+
       }
     }
+
     stage('Deploy to Kubernetes') {
       steps {
+        sh 'mvn clean package'
+        sh 'docker build -t devops-demo .'
         script {
           withKubeConfig([credentialsId: 'minikube-config']) {
+            sh 'kubectl delete namespace devops-demo'
             sh 'kubectl create namespace devops-demo'
             sh 'kubectl apply -f postgres-secret.yaml'
             sh 'kubectl apply -f postgres-storage.yaml'
@@ -68,8 +76,10 @@ pipeline {
             sh 'kubectl apply -f devops-demo-project.yaml'
           }
         }
+
       }
     }
+
   }
   tools {
     maven 'Maven'

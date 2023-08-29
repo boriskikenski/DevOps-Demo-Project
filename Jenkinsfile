@@ -67,6 +67,7 @@ pipeline {
         sh 'docker build -t devops-demo .'
         script {
           withKubeConfig([credentialsId: 'minikube-config']) {
+            sh 'kubectl delete namespace devops-demo'
             sh 'kubectl create namespace devops-demo'
             sh 'kubectl apply -f postgres-secret.yaml'
             sh 'kubectl apply -f postgres-storage.yaml'

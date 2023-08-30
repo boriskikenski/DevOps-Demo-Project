@@ -16,14 +16,13 @@ spec:
       containers:
         - name: postgres
           image: postgres:latest
-          imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5432
           envFrom:
             - secretRef:
-                name: postgres-secrets
+                name: postgres-secret
           volumeMounts:
-            - mountPath: /var/lib / postgresql / data
+            - mountPath: \Users\user
               name: postgresdb
       volumes:
         - name: postgresdb

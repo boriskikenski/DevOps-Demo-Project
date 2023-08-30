@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: devops-demo-project-deployment
+  namespace: devops-demo
   labels:
     app: devops-demo-project
 spec:
@@ -20,29 +21,15 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 8082
-          env:
-            - name: SPRING_DATASOURCE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: postgres-config
-                  key: postgres-url
-            - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: postgres-user
-            - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: postgres-password
-            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-              value: "update"
+          envFrom:
+            - secretRef:
+                name: postgres-secret
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: devops-demo-project-service
+  namespace: devops-demo
 spec:
   type: NodePort
   selector:
@@ -51,4 +38,4 @@ spec:
     - protocol: TCP
       port: 8082
       targetPort: 8082
-      nodePort: 30000
+      nodePort: 30001
